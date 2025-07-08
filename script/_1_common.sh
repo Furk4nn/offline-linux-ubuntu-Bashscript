@@ -40,6 +40,7 @@ accessPermission(){
         #bash scriptlere izin vermek
         sudo chmod +x countdown.sh
         sudo chmod +x reboot.sh
+        sudo chmod +x _2_other_programming.sh
     else
         echo -e "Dosya İzinleri Yapılmadı"
     fi
@@ -52,38 +53,54 @@ accessPermission
 Updated(){
     sleep 2
     echo -e "\n###### ${UPDATED} ####### "
-    read -p "Sistemin Listesini Güncellemek İstiyor musunuz ? e\h " listUpdatedResult
-    if [[ $listUpdatedResult == "e" || $listUpdatedResult == "E" ]]
-    then
-        echo -e "List Güncelleme Başladı..."
-        ./countdown.sh
-        sudo apt-get update
-    else
-        echo -e "Güncelleme Yapılmadı"
-    fi
+    
 
-     read -p "Sistemin Paketini Yükseltmek İstiyor musunuz ? e\h " systemListUpdatedResult
-    if [[ $systemListUpdatedResult == "e" || $systemListUpdatedResult == "E" ]]
-    then
-        echo -e "Kernel Güncelleme Başladı..."
-        ./countdown.sh
-        sudo apt-get update && sudo apt-get upgrade -y
-    else
-        echo -e "Güncelleme Yapılmadı"
-    fi
-
-    read -p "Sistemin Çekirdeğini Güncellemek İstiyor musunuz ? e\h " kernelUpdatedResult
-    if [[ $kernelUpdatedResult == "e" || $kernelUpdatedResult == "E" ]]
-    then
-        echo -e "Kernel Güncelleme Başladı..."
-        ./countdown.sh
-        sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y
-        #Çekirdek (Kernel) güncellemelerinde yeniden başlamak gerekebilir.
-        sudo apt list --upgradable | grep linux-image
+    #Güncelleme tercihi
+    echo -e "Güncelleme İçin seçim Yapınız\n1-)update\n2-)upgrade\n3-)dist-upgrade"
+    read chooise
+    #Girilen sayıya göre tercih 
+    case $chooise in
+        1)
+            read -p "Sistemin Listesini Güncellemek İstiyor musunuz ? e\h " listUpdatedResult
+            if [[ $listUpdatedResult == "e" || $listUpdatedResult == "E" ]]
+                 then
+                 echo -e "List Güncelleme Başladı..."
+                 ./countdown.sh
+                  sudo apt-get update
+             else
+                echo -e "Güncelleme Yapılmadı"
+            fi
+            ;;
+        2)
+             read -p "Sistemin Paketini Yükseltmek İstiyor musunuz ? e\h " systemListUpdatedResult
+                if [[ $systemListUpdatedResult == "e" || $systemListUpdatedResult == "E" ]]
+                 then
+                    echo -e "Kernel Güncelleme Başladı..."
+                    ./countdown.sh
+                    sudo apt-get update && sudo apt-get upgrade -y
+                else
+                    echo -e "Güncelleme Yapılmadı"
+                fi
+            ;;
+        3)
+             read -p "Sistemin Çekirdeğini Güncellemek İstiyor musunuz ? e\h " kernelUpdatedResult
+             if [[ $kernelUpdatedResult == "e" || $kernelUpdatedResult == "E" ]]
+                then
+                echo -e "Kernel Güncelleme Başladı..."
+                ./countdown.sh
+                sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y
+                #Çekirdek (Kernel) güncellemelerinde yeniden başlamak gerekebilir.
+                sudo apt list --upgradable | grep linux-image
        
-    else
-        echo -e "Güncelleme Yapılmadı"
-    fi
+            else
+            echo -e "Güncelleme Yapılmadı"
+             fi
+            ;;
+        *)
+            echo -e "Lütfen sadece size belirtilen seçeneklerden seçiniz"
+            exit 1
+            ;;
+    esac
 }
 Updated
 ################################################################################################
@@ -126,8 +143,11 @@ Install(){
         sleep 1
         sudo apt-get install openssh-server -y
         sleep 1
-        sudo apt install build-essential wget unzip -y
         #build-essential : Temel geliştirme araçları içeren meta-pakettir.
+        sudo apt install build-essential wget unzip -y
+        #Firewall Fonksiyonu
+        theFirewallInstall
+        theFirewallDelete
     else
         echo -e "Güncelleme Yapılmadı"
     fi
@@ -244,9 +264,8 @@ theFirewallInstall(){
     else
         echo -e "Güncelleme Yapılmadı"
     fi
-}
-    
-theFirewallInstall
+}    
+#theFirewallInstall
 ################################################################################################
 #Güvenlik duvar DELETE(UFW => Uncomplicated Firewall)
 theFirewallDelete(){
@@ -287,6 +306,7 @@ sleep 2
         echo -e "Güncelleme Yapılmadı"
     fi
 }
+#theFirewallDelete
 ################################################################################################
 #Information
 information(){
@@ -345,15 +365,14 @@ clean
 ##############################################################################################
 #Port and Version
 portVersion(){
-    #node -v
+    node -v
+    zip -v
+    unzip -v+
+    #build-essential:
+    gcc --version # gcc: GNU C compiler derlemek 
+    g++ --version # g++: GNU C++ compiler derleme
+    maker -version # make: Makefile kullanarak derlemek
     #java --version
     #git --version
     #docker-compose -v
-    #zip -v
-    #unzip -v+
-    #build-essential:
-    #gcc --version # gcc: GNU C compiler derlemek 
-    #g++ --version # g++: GNU C++ compiler derleme
-    #maker -version # make: Makefile kullanarak derlemek
-    
 }
