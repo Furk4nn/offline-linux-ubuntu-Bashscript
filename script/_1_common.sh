@@ -20,6 +20,24 @@ accessPermission(){
     then
         echo -e "Dosya İzinleri Başladı..."
         ./countdown.sh
+        #chmpod : Dosya ve izinlerin erişimi için izinler
+        #r: okuma 2^2=4
+        #w: yazma 2^1=2
+        #x: çalıştırma 2^0=1
+        #Kullanıcı kategorileri
+        #u: Dosya sahibi 
+        #g: Grup üyeleri
+        #o: Diğer kullanıcılar
+        #a: Tüm kullanıcılar
+
+        ls -al
+        ls -l countdown.sh
+        ls -l reboot.sh
+        #izinleri sembolik olarak değiştirmek
+        chmod u+rwx,g+rx,o+r ./script
+        #izinleri sayısal olarak değiştirmek
+        chmod 755 ./script
+        #bash scriptlere izin vermek
         sudo chmod +x countdown.sh
         sudo chmod +x reboot.sh
     else
@@ -132,6 +150,7 @@ PackageInstall(){
         echo -e "####### nginx #######"
         #Nginx check package dependency fonksiyonunu çağır
         check_package
+        #Yükleme
         sudo apt-get install nginx -y
         sudo systemctl star nginx
         sudo systemctl enable nginx
@@ -187,13 +206,86 @@ theFirewallInstall
 ################################################################################################
 #Güvenlik duvar INSTALL(UFW => Uncomplicated Firewall)
 theFirewallInstall(){
+    sleep 2
+    echo -e "\n###### ${UFW} ####### "
+    read -p "Güvenlik Duvarı Kurulumlarını İstiyor musunuz ? e\h " ufwResult
+    if [[ $ufwResult == "e" || $ufwResult == "E" ]]
+    then
+        echo -e "Güvenlik Duvarı Kurulumları Başladı..."
+        ./countdown.sh
+        netstat -nlptu
+        sleep 3
+        echo -e "####### UFW (Uncomplicated Firewall) #######" 
+        #UFW kurulumu
+        sudo apt install ufw -y
 
+        #UFW Status
+        sudo ufw status
+       
+       
+        #Varsayılan giden trafik kurallarını belirleme (dış dünyaya yapılan bağlantıların varsayılan olarak izin verilemsi)
+        #Tüm Giden Trafiğe İzin Verme
+        sudo ufw default allow outgoing
+        #SSH bağlantılarına izin verme (SSH bağlantıları için 22 numaralı portu açma)
+        sudo ufw allow ssh
+
+        sudo ufw allow 22
+        sudo ufw allow 80
+        sudo ufw allow 443
+        sudo ufw allow 1111
+        sudo ufw allow 8080
+        sudo ufw allow 2222
+        #IP:127.0.0.1 DNS:localhost
+        sudo ufw allow from 127.0.0.1 to ant port 8080
+        #ufw etkinleştirme
+        sudo ufw enable
+        
+        sudo ufw status
+    else
+        echo -e "Güncelleme Yapılmadı"
+    fi
 }
+    
 theFirewallInstall
 ################################################################################################
 #Güvenlik duvar DELETE(UFW => Uncomplicated Firewall)
 theFirewallDelete(){
+sleep 2
+    echo -e "\n###### ${UFW} ####### "
+    read -p "Güvenlik Duvarını Kapatmak İstiyor musunuz ? e\h " ufwCloseResult
+    if [[ $ufwCloseResult == "e" || $ufwCloseResult == "E" ]]
+    then
+        echo -e "Güvenlik Duvarı port,ip,gelen giden ağlar kapatılmaya başladı..."
+        ./countdown.sh
+        netstat -nlptu
+        sleep 3
+        echo -e "####### UFW (Uncomplicated Firewall) #######" 
+        #UFW kurulumu
+        sudo apt install ufw -y
 
+        #UFW Status
+        sudo ufw status
+        #Varsayılan gelen trafik kurallarını belirleme (güvenliği arttırmak için gelen bağlantıları varsayılan olarak reddeder yalnızca belirlenenlere izin verir)
+        #Tüm Gelen Trafiğe Engelle
+        sudo ufw default deny incoming
+        #SSH bağlantılarına izin verme (SSH bağlantıları için 22 numaralı portu açma)
+        sudo ufw delete allow ssh
+
+        sudo ufw delete allow 22
+        sudo ufw delete allow 80
+        sudo ufw delete allow 443
+        sudo ufw delete allow 1111
+        sudo ufw delete allow 8080
+        sudo ufw delete allow 2222
+        #IP:127.0.0.1 DNS:localhost
+        sudo ufw delete allow from 127.0.0.1 to ant port 8080
+        #ufw devre dışı bırakma
+        sudo ufw disable
+        
+        sudo ufw status
+    else
+        echo -e "Güncelleme Yapılmadı"
+    fi
 }
 ################################################################################################
 #Information
