@@ -12,6 +12,9 @@ UFW="Uncomplicated Firewall Güvenlik Duvarı Yönetim Aracı"
 LOGOUT="Sistemi Tekrar Başlatmak"
 CHECK="Yüklenecek Paket Bağımlılıkları"
 PACKAGE="Paket Sisteme Yüklü Mü"
+DOCKER_PULL="Docker Pulling"
+LOGIN="Docker Login"
+LOGOUT="Docker Logout"
 
 ################################################################################################
 #Updated
@@ -248,10 +251,229 @@ mavenInstall(){
         #VS CODE check package dependency fonksiyonunu çağır
         check_package
     else
-        echo -e "Git Yükleme Yapılmadı"
+        echo -e "Maven Yükleme Yapılmadı"
     fi
 }
 mavenInstall
+################################################################################################
+#Apache Tomcat Install
+#Install
+apacheTomcatInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${INSTALL} ####### "
+    read -p "APACHE TOMCAT Paketini Yüklemek İstiyor musunuz ? e\h " apachetomcatInstallResult
+    if [[ $apachetomcatInstallResult == "e" || $apachetomcatInstallResult == "E" ]]
+    then
+        echo -e "APACHE TOMCAT Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### APACHE TOMCAT #######"
+        
+        #Yükleme
+        java --version
+        javac --version
+        mvn --version
+        ./countdown.sh
+        
+        #APACHE TOMCAT Yükle
+        #Tomcat 10 için en az JDK 11 kurmalısınız.
+        wget https://archive.apache.org/dist/tomcat/tomcat-10/v10.0.8/bin/apache-tomcat-10.0.8.tar.gz
+        sudo tar xzvf apache-tomcat-10.0.8.tar.gz
+        sudo mkdir /opt/tomcat/
+        sudo mv apache-tomcat-10.0.8/* /opt/tomcat/
+        sudo chown -R www-data:www-data /opt/tomcat/
+        sudo chmod -R 755 /opt/tomcat/
+        
+
+        ./countdown.sh
+
+        #Tomcat servisini başlatmak ve etkinleştirmek
+
+        sudo systemctl daemon-reload
+        sudo systemctl start tomcat
+        #Restart Tomcat
+        sudo systemctl restart tomcat
+        
+        #Test
+        curl http://localhost:8080
+
+
+        #Tomcat servisini otomatik olarak başlatıyor.
+        sudo systemctl enable tomcat
+
+        /opt/tomcat/bin/catalina.sh version
+
+
+        echo -e "####### Version #######\n"
+        which git
+        which java
+        which maven
+        git --version
+        java --version
+        javac --version
+        mvn --version
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "Apache Tomcat Yükleme Yapılmadı..."
+    fi
+}
+apacheTomcatInstall
+
+################################################################################################
+#Docker Install
+#Install
+dockerInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${INSTALL} ####### "
+    read -p "DOCKER TOMCAT Paketini Yüklemek İstiyor musunuz ? e\h " dockerInstallResult
+    if [[ $dockerInstallResult == "e" || $dockerInstallResult == "E" ]]
+    then
+        echo -e "DOCKER Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### DOCKER #######"
+        
+        #Yükleme
+        git --version
+        java --version
+        javac --version
+        mvn --version
+        ./countdown.sh
+        
+        #Docker Yükle
+        #Eğer sistemde Docker varsa sil
+        sudo apt-get pruge docker-ce docker-ce-cli containerd.io -y
+        sudo rm -rf /var/lib/docker
+        sudo rm -rf /var/lib/containerd
+        sudo apt-get clean
+        sudo apt-get autoremove -y
+        sudo apt-get update
+        sudo apt-get remove docker docker-engine docker.io containerd runc
+        sudo apt-get update
+        sudo apt-get upgrade 
+
+        ## HTTPS üzerinden bir depo kullanmasına izin vermek için
+        sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+
+        ## Docker'ın resmi GPG anahtarını ekleyin . curl aracı ile gpg anahatırın 
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo apt-key fingerprint 0EBFCD88
+
+        ## curl aracı ile docker apt deposunu eklemek
+
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+        ## docker kurulumu
+        sudo apt-get update
+        sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
+        #sudo systemctl status docker
+        #sleep 2
+        sudo systemctl enable --now docker
+        sudo systemctl start docker
+
+        ##kullanıcı adınızı docker grubuna ekleyin
+        sudo usermod -aG docker ${USER}
+
+        su - ${USER}
+        sudo id -NG
+        sudo apt-get install bash-completion
+        docker version
+        #docker image oluştursun
+        
+        docker run hello-world
+
+        ./countdown.sh
+
+        #docker pulling
+        dockerPulling
+        dockerHubLogin
+        dockerHubLogout
+        #version
+        echo -e "####### Version #######\n"
+        which git
+        which java
+        which maven
+        git --version
+        java --version
+        javac --version
+        mvn --version
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "Docker Yükleme Yapılmadı..."
+    fi
+}
+dockerInstall
+#dockerPulling
+dockerPulling(){
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${DOCKER_PULL} ####### "
+    read -p "\nDockerHub'a Pull Yapmak İstiyor Musunuz ? e\h " updatedResult
+    if [[ $updatedResult == "e" || $updatedResult == "E" ]]
+    then
+        echo -e "Docker Pulling..."
+        sudo docker pull nginx
+        sudo docker pull httpd
+        sudo docker pull mysql
+        sudo docker pull mongo
+        sudo docker pull ubuntu
+        sudo docker pull centos
+    else
+        echo -e "apt-get Update List Güncellemesi Yapılmadı!!!\n"
+    fi
+}
+
+##Docker Login
+dockerHubLogin(){
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${LOGIN} ####### "
+    read -p "\nDockerHub'a Giriş Yapmak İstiyor Musunuz ? e\h " updatedResult
+    if [[ $updatedResult == "e" || $updatedResult == "E" ]]
+    then
+        echo -e "DockerHub Giriş Yapılıyor..."
+        sudo docker login
+    else
+        echo -e "DockerHub Giriş Yapılmadı"
+    fi
+}
+
+##Docker Logout
+dockerHubLogout(){
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${LOGOUT} ####### "
+    read -p "\nDockerHub'a Çıkış Yapmak İstiyor Musunuz ? e\h " updatedResult
+    if [[ $updatedResult == "e" || $updatedResult == "E" ]]
+    then
+        echo -e "DockerHub Giriş Yapılıyor..."
+        sudo docker logout
+    else
+        echo -e "DockerHub Giriş Yapılmadı"
+    fi
+}
+}
 #Paket Yüklendi mi
 is_loading_package(){
     sleep 2
@@ -400,6 +622,7 @@ portVersion(){
     java --version
     javac --version
     mvn --version
+    /opt/tomcat/bin/catalina.sh version
     #docker-compose -v
 }
 portVersion
