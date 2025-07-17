@@ -68,7 +68,7 @@ Updated(){
                  ./countdown.sh
                   sudo apt-get update
              else
-                echo -e "Sistem Liste Güncellenmesi Yapılmadı"
+                echo -e "Sistem Liste Güncellenmesi Yapılmadı..."
             fi
             ;;
         2)
@@ -79,7 +79,7 @@ Updated(){
                     ./countdown.sh
                     sudo apt-get update && sudo apt-get upgrade -y
                 else
-                    echo -e "Sistem Paket Güncellenmesi Yapılmadı"
+                    echo -e "Sistem Paket Güncellenmesi Yapılmadı..."
                 fi
             ;;
         3)
@@ -117,7 +117,7 @@ logout(){
         clean
         ./reboot.sh
     else
-        echo -e "Sistem Kapatılmadı"
+        echo -e "Sistem Kapatılmadı..."
     fi
 }
 #logout
@@ -149,7 +149,7 @@ Install(){
         theFirewallInstall
         theFirewallDelete
     else
-        echo -e "Sistem İçin Genel Yükleme Yapılmadı"
+        echo -e "Sistem İçin Genel Yükleme Yapılmadı..."
     fi
 
 }
@@ -188,7 +188,7 @@ PackageInstall(){
         echo -e "####### Python #######"
         sudo apt-get install python3 python3-pip -y
     else
-        echo -e "Sistemin İçin Genel Paket Yüklemesi Yapılmadı"
+        echo -e "Sistemin İçin Genel Paket Yüklemesi Yapılmadı..."
     fi
 }
 PackageInstall
@@ -200,7 +200,7 @@ sleep 2
     read -p "Sistemin İçin Genel Paket Yükleme İstiyor musunuz ? e\h " checkResult
     if [[ $checkResult == "e" || $checkResult == "E" ]]
     then
-        echo -e "Yüklenecek Paket Bağımlılığı"
+        echo -e "Yüklenecek Paket Bağımlılığı..."
         ./countdown.sh
         echo -e "Bulunduğum Dizin => $(pwd)\n"
         sleep 1
@@ -211,7 +211,7 @@ sleep 2
         #dependecy
         dependecy "$user_input"
     else
-        echo -e "Paket Bağımlılıkları Yapılmadı"
+        echo -e "Paket Bağımlılıkları Yapılmadı..."
     fi
 }
 dependecy(){
@@ -262,7 +262,7 @@ theFirewallInstall(){
         
         sudo ufw status
     else
-        echo -e "Güvenlik Duvarı Açılmadı."
+        echo -e "Güvenlik Duvarı Açılmadı..."
     fi
 }    
 #theFirewallInstall
@@ -303,7 +303,7 @@ sleep 2
         
         sudo ufw status
     else
-        echo -e "Güvenlik Duvarı Ayarları Kapatılmadı ..."
+        echo -e "Güvenlik Duvarı Ayarları Kapatılmadı..."
     fi
 }
 #theFirewallDelete
@@ -335,7 +335,7 @@ information(){
         echo -e "RAM Bilgileri => $(free -m)\n"
 
     else
-        echo -e "Dosya İzinleri Yapılmadı"
+        echo -e "Dosya İzinleri Yapılmadı..."
     fi
 
 }
