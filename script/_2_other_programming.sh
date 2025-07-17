@@ -90,6 +90,8 @@ logout(){
 #Git Package Install
 #Install
 gitInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
     sleep 2
     echo -e "\n###### ${INSTALL} ####### "
     read -p "Git Paketini Yüklemek İstiyor musunuz ? e\h " gitInstallResult
@@ -99,27 +101,157 @@ gitInstall(){
         ./countdown.sh
         echo -e "Bulunduğum Dizin => $(pwd)\n"
         sleep 1
-        echo -e "####### Git #######"
-        #Git check package dependency fonksiyonunu çağır
-        check_package
+        echo -e "####### Git #######\n"
+
         #Yükleme
         sudo apt-get install git -y
         git version
         git config --global user.name "Furkan"
         git config --global user.email "furkan_ince06@hotmail.com"
         git config --global -l
+
+        ./countdown.sh
+        echo -e "####### Git Version #######\n"
+        git --version
+
         clean     
 
         #yüklenen paket hakkında bilgi
         is_loading_package
 
-        #Paket bağımlılığını görme
+        #Git check package dependency fonksiyonunu çağır
         check_package
     else
         echo -e "Git Yükleme Yapılmadı"
     fi
 }
 gitInstall
+################################################################################################
+#VS Code Install
+#Install
+vsCodeInstall(){
+      Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${INSTALL} ####### "
+    read -p "VS Code Paketini Yüklemek İstiyor musunuz ? e\h " vscodeInstallResult
+    if [[ $vscodeInstallResult == "e" || $vscodeInstallResult == "E" ]]
+    then
+        echo -e "VS Code Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### VS CODE #######"
+        
+        #Yükleme
+        sudo  snap install code --classic
+        sleep 1
+
+        sudo mkdir frontend
+        cd frontend
+        code .
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "VS Code Yükleme Yapılmadı"
+    fi
+}
+vsCodeInstall
+################################################################################################
+#JDK Install
+#Install
+jdkInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${INSTALL} ####### "
+    read -p "JDK Paketini Yüklemek İstiyor musunuz ? e\h " jdkInstallResult
+    if [[ $jdkInstallResult == "e" || $jdkInstallResult == "E" ]]
+    then
+        echo -e "JDK Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### JDK #######"
+        
+        #Yükleme
+       sudo apt-get install openjdk-11-jdk -y
+       sudo add-apt-repository ppa:openjdk-r/ppa -y
+       echo -e "#Java Home\nJAVA_HOME=\"/usr/lib/jvm/java-11-openjdk-amd64/bin/\" " >> ~/.bashrc
+
+       #sudo update-alternatives --config java
+
+        ./countdown.sh
+        echo -e "####### JDK #######\n"
+        which git
+        which java
+        java --version
+        javac --version
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "JDK Yükleme Yapılmadı"
+    fi
+}
+jdkInstall
+
+################################################################################################
+#Maven Install
+#Install
+mavenInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${INSTALL} ####### "
+    read -p "MAVEN Paketini Yüklemek İstiyor musunuz ? e\h " mavenInstallResult
+    if [[ $mavenInstallResult == "e" || $mavenInstallResult == "E" ]]
+    then
+        echo -e "MAVEN Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### MAVEN #######"
+        
+        #Yükleme
+        java --version
+        javac --version
+        ./countdown.sh
+        #Maven Yükle
+        sudo apt install maven 
+        ./countdown.sh
+        echo -e "####### Version #######\n"
+        which git
+        which java
+        which maven
+        git --version
+        java --version
+        javac --version
+        mvn --version
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "Git Yükleme Yapılmadı"
+    fi
+}
+mavenInstall
 #Paket Yüklendi mi
 is_loading_package(){
     sleep 2
@@ -264,8 +396,10 @@ portVersion(){
     gcc --version # gcc: GNU C compiler derlemek 
     g++ --version # g++: GNU C++ compiler derleme
     maker -version # make: Makefile kullanarak derlemek
-    #java --version
-    #git --version
+    git --version
+    java --version
+    javac --version
+    mvn --version
     #docker-compose -v
 }
 portVersion
