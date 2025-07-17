@@ -473,7 +473,6 @@ dockerHubLogout(){
         echo -e "DockerHub Giriş Yapılmadı"
     fi
 }
-}
 #Paket Yüklendi mi
 is_loading_package(){
     sleep 2
