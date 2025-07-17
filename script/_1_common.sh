@@ -195,7 +195,7 @@ PackageInstall
 ################################################################################################
 #Paket Bağımlılıklarını Görme
 check_package(){
-sleep 2
+    sleep 2
     echo -e "\n###### ${CHECK}} ####### "
     read -p "Sistemin İçin Genel Paket Yükleme İstiyor musunuz ? e\h " checkResult
     if [[ $checkResult == "e" || $checkResult == "E" ]]
@@ -253,8 +253,13 @@ theFirewallInstall(){
         sudo ufw allow 80
         sudo ufw allow 443
         sudo ufw allow 1111
-        sudo ufw allow 8080
         sudo ufw allow 2222
+        sudo ufw allow 3333
+        sudo ufw allow 3306
+        sudo ufw allow 5432
+        sudo ufw allow 8080
+        sudo ufw allow 9000
+        sudo ufw allow 9090
         #IP:127.0.0.1 DNS:localhost
         sudo ufw allow from 127.0.0.1 to ant port 8080
         #ufw etkinleştirme
@@ -269,7 +274,7 @@ theFirewallInstall(){
 ################################################################################################
 #Güvenlik duvar DELETE(UFW => Uncomplicated Firewall)
 theFirewallDelete(){
-sleep 2
+    sleep 2
     echo -e "\n###### ${UFW} ####### "
     read -p "Güvenlik Duvarını Kapatmak İstiyor musunuz ? e\h " ufwCloseResult
     if [[ $ufwCloseResult == "e" || $ufwCloseResult == "E" ]]
