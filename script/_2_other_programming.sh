@@ -33,18 +33,18 @@ Updated(){
                  ./countdown.sh
                   sudo apt-get update
              else
-                echo -e "Güncelleme Yapılmadı"
+                echo -e "Sistem Listesi Güncellenmesi Yapılmadı"
             fi
             ;;
         2)
              read -p "Sistemin Paketini Yükseltmek İstiyor musunuz ? e\h " systemListUpdatedResult
                 if [[ $systemListUpdatedResult == "e" || $systemListUpdatedResult == "E" ]]
                  then
-                    echo -e "Kernel Güncelleme Başladı..."
+                    echo -e "Sistem Paket Güncellenmesi Başladı..."
                     ./countdown.sh
                     sudo apt-get update && sudo apt-get upgrade -y
                 else
-                    echo -e "Güncelleme Yapılmadı"
+                    echo -e "Sistem Paket Güncellenmesi Yapılmadı"
                 fi
             ;;
         3)
@@ -58,7 +58,7 @@ Updated(){
                 sudo apt list --upgradable | grep linux-image
        
             else
-            echo -e "Güncelleme Yapılmadı"
+            echo -e "Kernel Güncelleme Yapılmadı"
              fi
             ;;
         *)
@@ -116,7 +116,7 @@ gitInstall(){
         #Paket bağımlılığını görme
         check_package
     else
-        echo -e "Yükleme Yapılmadı"
+        echo -e "Git Yükleme Yapılmadı"
     fi
 }
 gitInstall

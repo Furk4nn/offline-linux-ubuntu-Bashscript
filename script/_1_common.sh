@@ -10,7 +10,7 @@ INFORMATION="Genel Bilgiler Ports"
 UFW="Uncomplicated Firewall Güvenlik Duvarı Yönetim Aracı"
 LOGOUT="Sistemi Tekrar Başlatmak"
 CHECK="Yüklenecek Paket Bağımlılıkları"
-
+TECH="Diğer Teknolojiler"
 #Access Permission
 accessPermission(){
     sleep 1
@@ -68,18 +68,18 @@ Updated(){
                  ./countdown.sh
                   sudo apt-get update
              else
-                echo -e "Güncelleme Yapılmadı"
+                echo -e "Sistem Liste Güncellenmesi Yapılmadı"
             fi
             ;;
         2)
              read -p "Sistemin Paketini Yükseltmek İstiyor musunuz ? e\h " systemListUpdatedResult
                 if [[ $systemListUpdatedResult == "e" || $systemListUpdatedResult == "E" ]]
                  then
-                    echo -e "Kernel Güncelleme Başladı..."
+                    echo -e "Sistem Paket Güncellenmesi Başladı..."
                     ./countdown.sh
                     sudo apt-get update && sudo apt-get upgrade -y
                 else
-                    echo -e "Güncelleme Yapılmadı"
+                    echo -e "Sistem Paket Güncellenmesi Yapılmadı"
                 fi
             ;;
         3)
@@ -93,7 +93,7 @@ Updated(){
                 sudo apt list --upgradable | grep linux-image
        
             else
-            echo -e "Güncelleme Yapılmadı"
+            echo -e "Kernel Güncellemesi Yapılmadı..."
              fi
             ;;
         *)
@@ -149,7 +149,7 @@ Install(){
         theFirewallInstall
         theFirewallDelete
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Sistem İçin Genel Yükleme Yapılmadı"
     fi
 
 }
@@ -188,7 +188,7 @@ PackageInstall(){
         echo -e "####### Python #######"
         sudo apt-get install python3 python3-pip -y
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Sistemin İçin Genel Paket Yüklemesi Yapılmadı"
     fi
 }
 PackageInstall
@@ -211,7 +211,7 @@ sleep 2
         #dependecy
         dependecy "$user_input"
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Paket Bağımlılıkları Yapılmadı"
     fi
 }
 dependecy(){
@@ -262,7 +262,7 @@ theFirewallInstall(){
         
         sudo ufw status
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Güvenlik Duvarı Açılmadı."
     fi
 }    
 #theFirewallInstall
@@ -303,7 +303,7 @@ sleep 2
         
         sudo ufw status
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Güvenlik Duvarı Ayarları Kapatılmadı ..."
     fi
 }
 #theFirewallDelete
@@ -358,7 +358,7 @@ clean(){
             echo -e "Kırık Bağımlılıkları Yükle..."
             sudo apt install -f
     else
-        echo -e "Güncelleme Yapılmadı"
+        echo -e "Temizleme Yapılmadı..."
     fi
 }
 clean
@@ -376,3 +376,26 @@ portVersion(){
     #git --version
     #docker-compose -v
 }
+portVersion
+
+##############################################################################################
+##############################################################################################
+#Clean
+#Install
+other_technology(){
+    sleep 2
+    echo -e "\n###### ${TECH} ####### "
+    read -p "Sistem İçin Yüklemek İsteyeceğiniz Paketleri Yüklemek İstiyor musunuz ? e\h " otherResult
+    if [[ $otherResult == "e" || $otherResult == "E" ]]
+    then
+        echo -e "Teknolojiler Yüklenmeye Başladı..."
+        ./countdown.sh
+
+        echo -e "####### Teknolojiler #######\n"
+        ./_2_other_programming.sh
+        
+    else
+        echo -e "Teknolojiler Yüklemeye Başlanmadı..."
+    fi
+}
+other_technology
