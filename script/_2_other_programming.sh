@@ -1,6 +1,5 @@
 #!/bin/bash
-#!/bin/bash
-echo "Genel Kurumlar"
+echo "Diğer Kurumlar"
 #User Variable
 UPDATED="Güncelleme"
 CLEANER="Temizleme"
@@ -17,6 +16,8 @@ LOGIN="Docker Login"
 LOGOUT="Docker Logout"
 PORTAINER="Docker Portainer"
 DOCKERCOMPOSE="Docker Compose"
+POSTGRESQL="RDBMS PostgreSQL"
+SONARQUBE="SonarQube"
 
 ################################################################################################
 #Updated
@@ -450,6 +451,10 @@ dockerPulling(){
         sudo docker pull redis
         sudo docker pull python:3.8
         docker images
+
+        ./countdown.sh #Geri sayım fonksiyonu
+        #Docker Üzerinden Apache Tomcat'i Ayağa Kaldırmak
+        ./docker_tomcat.sh #Docker Tomcat fonksiyonunu çağır
     else
         echo -e "apt-get Update List Güncellemesi Yapılmadı!!!\n"
     fi
@@ -545,6 +550,190 @@ dockerCompose(){
         echo -e "Docker Compose Ekleme Yapılmadı!!!\n "   
     fi
 }
+
+postgresqlInstall(){
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${POSTGRESQL} ####### "
+    read -p "POSTGRESQL Paketini Yüklemek İstiyor musunuz ? e\h " postgresqlInstallResult
+    if [[ $postgresqlInstallResult == "e" || $postgresqlInstallResult == "E" ]]
+    then
+        echo -e "POSTGRESQL Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### POSTGRESQL #######"
+        
+        #Yükleme
+        java --version
+        javac --version
+        mvn --version
+        ./countdown.sh
+        
+        #POSTGRESQL Yükle
+        sudo ufw allow 5432
+         # sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+        echo -e "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main " | sudo tee --append /etc/apt/sources.list.d/pgdg.list
+        sudo wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+        sudo apt-get -y install postgresql postgresql-contrib
+
+        sleep 2
+        echo -e "######Postgresql Enable"
+        sudo systemctl enable postgresql
+
+        sleep 2
+        echo -e "Postgresql Start"
+        sudo systemctl start postgresql
+
+        echo -e "Postgresql yeni şifre: sonarqube yapalım"
+        # yeni şifre sonarqube
+        sudo passwd postgres
+        su - postgres
+        createuser sonar
+        psql
+        ALTER USER sonar WITH ENCRYPTED password 'sonar';
+        CREATE DATABASE sonarqube OWNER sonar;
+        grant all privileges on DATABASE sonarqube to sonar;
+        \q
+        exit
+
+        sleep 2
+        echo -e "Postgreql Bağımlılılar Yükleniyor"
+        sudo apt install -f
+
+        sleep 2
+        echo -e "5432 PORT"
+        sudo netstat -nlptu | grep 5432
+        sudo netstat -nlptu
+
+
+
+        echo -e "####### Version #######\n"
+        which git
+        which java
+        which maven
+        git --version
+        java --version
+        javac --version
+        mvn --version
+
+        clean     
+
+        #yüklenen paket hakkında bilgi
+        is_loading_package
+
+        #VS CODE check package dependency fonksiyonunu çağır
+        check_package
+    else
+        echo -e "Apache Tomcat Yükleme Yapılmadı..."
+    fi
+}
+postgresqlInstall
+
+sonarQubeInstall()
+{
+    Updated # Güncelleme fonksiyonunu
+    ./countdown.sh #Geri sayım fonksiyonu
+    sleep 2
+    echo -e "\n###### ${SONARQUBE} ####### "
+    read -p "SonarQube Paketini Yüklemek İstiyor musunuz ? e\h " sonarQubeInstallResult
+    if [[ $sonarQubeInstallResult == "e" || $sonarQubeInstallResult == "E" ]]
+    then
+        echo -e "SonarQube Paket Yükleme Başladı..."
+        ./countdown.sh
+        echo -e "Bulunduğum Dizin => $(pwd)\n"
+        sleep 1
+        echo -e "####### SonarQube #######"
+        
+        #Yükleme
+        java --version
+        javac --version
+        mvn --version
+        ./countdown.sh
+        
+        sudo ufw allow 9000
+
+        sleep 2
+        sudo sysctl -w vm.max_map_count=524288
+        sudo sysctl -w fs.file-max=131072
+        sudo ulimit -n 131072
+        sudo ulimit -u 8192
+        sudo ufw allow 9000
+
+        sleep 2
+        #echo -e "#SonarQube Home\nsonarqube   -   nofile   65536\nsonarqube   -   nproc    4096  " >> /etc/security/limits.conf
+        echo -e "#SonarQube Home\nsonarqube   -   nofile   65536\nsonarqube   -   nproc    4096  " | sudo tee --append /etc/security/limits.conf
+
+        cd /tmp
+        sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.9.0.65466.zip
+        sudo unzip sonarqube-9.9.0.65466.zip -d /opt
+        sudo mv /opt/sonarqube-9.9.0.65466 /opt/sonarqube
+        sudo groupadd sonar
+        sudo useradd -c "user to run SonarQube" -d /opt/sonarqube -g sonar sonar 
+        sudo chown sonar:sonar /opt/sonarqube -R
+        echo -e "### Sonar Config Yükleme Başlandı... "
+        echo -e "#SonarQube Config" | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "sonar.jdbc.username=sonar" | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "sonar.jdbc.password=sonarqube" | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube" | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "sonar.web.port=9000 " | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "#sonar.web.host=127.0.0.1 " | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "#sonar.web.context=/sonar" | sudo tee --append /opt/sonarqube/conf/sonar.properties
+        echo -e "RUN_AS_USER=sonar" | sudo tee --append /opt/sonarqube/bin/linux-x86-64/sonar.sh
+
+        echo -e "#my special Sonar" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "[Unit]" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "Description=SonarQube service" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "After=syslog.target network.target" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "[Service]" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "Type=forking" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "User=sonar" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "Group=sonar" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "Restart=always" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "LimitNOFILE=65536" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "LimitNPROC=4096" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "[Install]" | sudo tee --append /etc/systemd/system/sonar.service
+        echo -e "WantedBy=multi-user.target" | sudo tee --append /etc/systemd/system/sonar.service
+
+
+        echo -e "Bağımlılıklar Yükleniyor"
+        sudo apt install –f 
+
+        echo -e "### Sudo su sonar başladı... ################################ "
+        # sudo su sonar
+        # echo -e "./sonar.sh start" | sudo tee --append /opt/sonarqube/bin/linux-x86-64
+        # echo -e "./sonar.sh status" | sudo tee --append /opt/sonarqube/bin/linux-x86-64
+        # echo -e "tail" | sudo tee --append /opt/sonarqube/logs/sonar.log
+        # echo -e "./sonar.sh stop" | sudo tee --append /opt/sonarqube/bin/linux-x86-64
+        # exit
+        sudo su sonar
+        cd /opt/sonarqube/bin/linux-x86-64/
+        ./sonar.sh start
+        ./sonar.sh status
+        tail /opt/sonarqube/logs/sonar.log
+        cd /opt/sonarqube/bin/linux-x86-64/
+        ./sonar.sh stop
+        exit
+
+        # bunu yazmazsan çalışmaz
+        sudo sysctl -w vm.max_map_count=262144
+        sysctl vm.max_map_count
+        sudo netstat -ntlp | grep 9000
+        #journalctl -u sonar
+        ./countdown.sh
+        
+        echo -e "### systemctl daemon-reload ################################ "
+        sudo systemctl daemon-reload
+        sudo systemctl enable sonar
+        sudo systemctl start sonar
+        sudo systemctl restart sonar
+}
+sonarQubeInstall
+
+
 #Paket Yüklendi mi
 is_loading_package(){
     sleep 2

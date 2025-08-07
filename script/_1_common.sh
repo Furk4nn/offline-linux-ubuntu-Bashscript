@@ -41,6 +41,8 @@ accessPermission(){
         sudo chmod +x countdown.sh
         sudo chmod +x reboot.sh
         sudo chmod +x _2_other_programming.sh
+        sudo chmod +x _2_other_programming.sh
+        sudo chmot +x docket_tomcat.sh
     else
         echo -e "Dosya İzinleri Yapılmadı"
     fi
